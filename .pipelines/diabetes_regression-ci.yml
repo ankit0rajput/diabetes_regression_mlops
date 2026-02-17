@@ -93,7 +93,7 @@ stages:
           set -e # fail on error
           python -m pip install --upgrade pip
           pip install azureml-sdk
-          
+          pip install dotenv
           export SUBSCRIPTION_ID=$(az account show --query id -o tsv)
           python -m ml_service.pipelines.run_train_pipeline --output_pipeline_id_file "pipeline_id.txt" --skip_train_execution
           # Set AMLPIPELINEID variable for next AML Pipeline task in next job
