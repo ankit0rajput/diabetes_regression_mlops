@@ -30,21 +30,20 @@ stages:
   jobs:
   - job: "Model_CI_Pipeline"
     displayName: "Model CI Pipeline"
-    container: mlops
     timeoutInMinutes: 0
     steps:
     - template: code-quality-template.yml
     - task: AzureCLI@2
       inputs:
         azureSubscription: '$(WORKSPACE_SVC_CONNECTION)'
-        scriptType: 'bash'        # 🔥 REQUIRED
+        scriptType: 'bash'
         scriptLocation: 'inlineScript'
-        workingDirectory: $(Build.SourcesDirectory)
         inlineScript: |
           set -e
           az version
           export SUBSCRIPTION_ID=$(az account show --query id -o tsv)
           python -m ml_service.pipelines.diabetes_regression_build_train_pipeline
+        workingDirectory: '$(Build.SourcesDirectory)'
       displayName: 'Publish Azure Machine Learning Pipeline'
 - stage: 'Trigger_AML_Pipeline'
   displayName: 'Train and evaluate model'
