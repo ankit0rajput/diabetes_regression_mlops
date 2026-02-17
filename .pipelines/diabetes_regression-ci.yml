@@ -121,17 +121,35 @@ stages:
     dependsOn: "Get_Pipeline_ID"
     displayName: "Trigger ML Training Pipeline"
     timeoutInMinutes: 0
-    pool: server
     variables:
       AMLPIPELINE_ID: $[ dependencies.Get_Pipeline_ID.outputs['getpipelineid.AMLPIPELINEID'] ]
     steps:
-    - task: MLPublishedPipelineRestAPITask@0
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.9'
+        addToPath: true
+
+    - task: AzureCLI@2
       inputs:
         azureSubscription: '$(WORKSPACE_SVC_CONNECTION)'
-        PipelineId: '$(AMLPIPELINE_ID)'
-        ExperimentName: '$(EXPERIMENT_NAME)'
-        PipelineParameters: '"ParameterAssignments": {"model_name": "$(MODEL_NAME)"}, "tags": {"BuildId": "$(Build.BuildId)", "BuildUri": "$(BUILD_URI)"}, "StepTags": {"BuildId": "$(Build.BuildId)", "BuildUri": "$(BUILD_URI)"}'
-        
+        scriptType: bash
+        scriptLocation: inlineScript
+        workingDirectory: $(Build.SourcesDirectory)
+        inlineScript: |
+          set -e
+
+          python -m pip install --upgrade pip
+          python -m pip install azureml-sdk
+
+          export WORKSPACE_NAME=$(WORKSPACE_NAME)
+          export RESOURCE_GROUP=$(RESOURCE_GROUP)
+          export SUBSCRIPTION_ID=$(SUBSCRIPTION_ID)
+
+          python -m ml_service.pipelines.run_train_pipeline \
+            --pipeline_id $(AMLPIPELINE_ID) \
+            --experiment_name $(EXPERIMENT_NAME) \
+            --model_name $(MODEL_NAME)
+      
   - job: "Training_Run_Report"
     dependsOn: "Run_ML_Pipeline"
     condition: always()
