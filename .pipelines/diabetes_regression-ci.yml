@@ -37,6 +37,7 @@ stages:
     - task: AzureCLI@2
       inputs:
         azureSubscription: '$(WORKSPACE_SVC_CONNECTION)'
+        scriptType: 'bash'        # 🔥 REQUIRED
         scriptLocation: inlineScript
         workingDirectory: $(Build.SourcesDirectory)
         inlineScript: |
