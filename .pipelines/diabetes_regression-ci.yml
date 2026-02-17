@@ -34,7 +34,7 @@ stages:
     timeoutInMinutes: 0
     steps:
     - template: code-quality-template.yml
-    - task: AzureCLI@1
+    - task: AzureCLI@2
       inputs:
         azureSubscription: '$(WORKSPACE_SVC_CONNECTION)'
         scriptLocation: inlineScript
@@ -45,7 +45,6 @@ stages:
           # Invoke the Python building and publishing a training pipeline
           python -m ml_service.pipelines.diabetes_regression_build_train_pipeline
       displayName: 'Publish Azure Machine Learning Pipeline'
-
 - stage: 'Trigger_AML_Pipeline'
   displayName: 'Train and evaluate model'
   condition: succeeded()
