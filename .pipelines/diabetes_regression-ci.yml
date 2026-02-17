@@ -36,6 +36,17 @@ stages:
     - task: AzureCLI@2
       inputs:
         azureSubscription: '$(WORKSPACE_SVC_CONNECTION)'
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          echo "Logged in account:"
+          az account show
+          echo "All available subscriptions:"
+          az account list --output table
+
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: '$(WORKSPACE_SVC_CONNECTION)'
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
