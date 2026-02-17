@@ -28,12 +28,11 @@ stages:
 - stage: 'Model_CI'
   displayName: 'Model CI'
   jobs:
-  - job: "Model_CI_Pipeline"
-    displayName: "Model CI Pipeline"
-    container: mlops
-    timeoutInMinutes: 0
+
+  # Job 1 - Azure Login (NO CONTAINER)
+  - job: Azure_Login
+    displayName: "Azure Login & Setup"
     steps:
-    - template: code-quality-template.yml
     - task: AzureCLI@2
       inputs:
         azureSubscription: '$(WORKSPACE_SVC_CONNECTION)'
@@ -42,10 +41,21 @@ stages:
         inlineScript: |
           set -e
           az version
-          export SUBSCRIPTION_ID=$(az account show --query id -o tsv)
-          python -m ml_service.pipelines.diabetes_regression_build_train_pipeline
-        workingDirectory: '$(Build.SourcesDirectory)'
-      displayName: 'Publish Azure Machine Learning Pipeline'
+          az account show
+      displayName: 'Azure Login'
+
+  # Job 2 - Run inside container
+  - job: Model_CI_Pipeline
+    dependsOn: Azure_Login
+    displayName: "Model CI Pipeline"
+    container: mlops
+    steps:
+    - template: code-quality-template.yml
+    - script: |
+        python -m ml_service.pipelines.diabetes_regression_build_train_pipeline
+      workingDirectory: $(Build.SourcesDirectory)
+      displayName: "Run ML Build Pipeline"
+
 - stage: 'Trigger_AML_Pipeline'
   displayName: 'Train and evaluate model'
   condition: succeeded()
