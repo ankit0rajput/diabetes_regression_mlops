@@ -30,6 +30,7 @@ stages:
   jobs:
   - job: "Model_CI_Pipeline"
     displayName: "Model CI Pipeline"
+    container: mlops
     timeoutInMinutes: 0
     steps:
     - template: code-quality-template.yml
