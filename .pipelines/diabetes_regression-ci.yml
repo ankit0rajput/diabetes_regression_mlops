@@ -102,6 +102,21 @@ stages:
       name: 'getpipelineid'
       displayName: 'Get Pipeline ID'
   
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: '$(WORKSPACE_SVC_CONNECTION)'
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          echo "Logged subscription:"
+          az account show --query id -o tsv
+
+          echo "Workspace details:"
+          az ml workspace show \
+            --name mlops-AML-WS \
+            --resource-group mlops-RG \
+            --query "{name:name, location:location}"
+
   - job: "Run_ML_Pipeline"
     dependsOn: "Get_Pipeline_ID"
     displayName: "Trigger ML Training Pipeline"
