@@ -87,6 +87,7 @@ stages:
         inlineScript: |
           set -e # fail on error
           export SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+          pip install azureml-sdk
           python -m ml_service.pipelines.run_train_pipeline --output_pipeline_id_file "pipeline_id.txt" --skip_train_execution
           # Set AMLPIPELINEID variable for next AML Pipeline task in next job
           AMLPIPELINEID="$(cat pipeline_id.txt)"
