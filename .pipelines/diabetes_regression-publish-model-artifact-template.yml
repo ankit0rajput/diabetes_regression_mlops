@@ -1,42 +1,44 @@
-# Pipeline template to check if a model was registered for the build and publishes an artifact with the model JSON
 steps:
+  # Install Azure ML CLI v2
   - task: AzureCLI@2
-    displayName: "Install AzureML CLI"
+    displayName: "Install Azure ML CLI (v2)"
     inputs:
       azureSubscription: "$(WORKSPACE_SVC_CONNECTION)"
-      scriptType: "bash"
+      scriptType: bash
       scriptLocation: inlineScript
-      workingDirectory: $(Build.SourcesDirectory)
-      inlineScript: "az extension add --source https://azurecliext.blob.core.windows.net/release/azure_cli_ml-1.27.0-py3-none-any.whl --yes"
-
-  - task: AzureCLI@2
-    inputs:
-      azureSubscription: "$(WORKSPACE_SVC_CONNECTION)"
-      scriptType: "bash"
-      scriptLocation: "inlineScript"
       inlineScript: |
         set -e
-        az version
-        az account show
-        displayName: 'Azure Login'
+        az extension add -n ml -y
+        az extension list -o table
 
+  # Check if model registered
   - task: AzureCLI@2
+    name: getversion
+    displayName: "Determine if evaluation succeeded and new model is registered"
     inputs:
       azureSubscription: "$(WORKSPACE_SVC_CONNECTION)"
+      scriptType: bash
       scriptLocation: inlineScript
       workingDirectory: $(Build.SourcesDirectory)
       inlineScript: |
-        set -e # fail on error
+        set -e
 
-        # Get the model using the build ID tag
-        FOUND_MODEL=$(az ml model list -g $(RESOURCE_GROUP) --workspace-name $(WORKSPACE_NAME) --tag BuildId=$(Build.BuildId) --query '[0]')
+        echo "Checking for model with BuildId=$(Build.BuildId)..."
 
-        # If the variable is empty, print and fail
-        [[ -z "$FOUND_MODEL" ]] && { echo "Model was not registered for this run." ; exit 1; }
+        FOUND_MODEL=$(az ml model list \
+          --resource-group $(RESOURCE_GROUP) \
+          --workspace-name $(WORKSPACE_NAME) \
+          --query "[?tags.BuildId=='$(Build.BuildId)'] | [0]" \
+          -o json)
 
-        # Write to a file
-        echo $FOUND_MODEL >model.json
-    name: "getversion"
-    displayName: "Determine if evaluation succeeded and new model is registered (CLI)"
+        if [ "$FOUND_MODEL" == "null" ] || [ -z "$FOUND_MODEL" ]; then
+          echo "Model was not registered for this run."
+          exit 1
+        fi
+
+        echo "$FOUND_MODEL" > model.json
+        echo "Model found and saved to model.json"
+
+  # Publish artifact
   - publish: model.json
     artifact: model
