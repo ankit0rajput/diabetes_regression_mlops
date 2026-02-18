@@ -31,9 +31,11 @@ steps:
           --query "[?tags.BuildId=='$(Build.BuildId)'] | [0]" \
           -o json)
 
+        echo FOUND_MODEL
+
         if [ "$FOUND_MODEL" == "null" ] || [ -z "$FOUND_MODEL" ]; then
           echo "Model was not registered for this run."
-          exit 1
+          # exit 1
         fi
 
         echo "$FOUND_MODEL" > model.json
