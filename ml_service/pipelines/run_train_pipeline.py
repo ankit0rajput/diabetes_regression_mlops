@@ -19,8 +19,13 @@ def main():
         help=("Do not trigger the execution. "
               "Use this in Azure DevOps when using a server job to trigger")
     )
-    args = parser.parse_args()
+    # NEW arguments
+    parser.add_argument("--pipeline_id", type=str)
+    parser.add_argument("--experiment_name", type=str)
+    parser.add_argument("--model_name", type=str)
 
+    args = parser.parse_args()
+    print(f"args=>{args}")
     e = Env()
 
     aml_workspace = Workspace.get(
@@ -31,6 +36,7 @@ def main():
 
     # Find the pipeline that was published by the specified build ID
     pipelines = PublishedPipeline.list(aml_workspace)
+    print(f"pipelines=>{pipelines}")
     matched_pipes = []
 
     for p in pipelines:
