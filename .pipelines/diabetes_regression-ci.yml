@@ -113,7 +113,7 @@ stages:
                 echo "Workspace details:"
                 az ml workspace show \
                   --name mlops-AML-WS \
-                  --resource-group mlops-RG \
+                  --resource-group mlops-RG-1 \
                   --query "{name:name, location:location}"
 
       - job: "Run_ML_Pipeline"
