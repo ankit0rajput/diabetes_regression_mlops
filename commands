@@ -1,0 +1,15 @@
+az logout
+   5 az account clear
+   6 echo %USERNAME%
+   7 C:\Users\akum1666\.azure
+   8 az account clear
+   9 az login --use-device-code
+  10 az configure --defaults  group=mlops-RG   workspace=mlops-AML-WS   location=eastus2
+  11 az ml compute create  --name train-cluster  --type amlcompute  --size Standard_DS11_v2  --min-instances 0  --m... 
+  12 az ml job create --file job.yml
+  13 az ml job list -o table
+  14 az ml model create   --name diabetes_regression_model   --path azureml://jobs/magenta_rod_h6hxmdd6p3/outputs/a...
+  15 az ml online-endpoint update   --name my-model-endpoint1   --traffic blue=100
+  16 az ml online-endpoint create  --file endpoint.yml
+  17 az ml online-deployment create  --file deployment.yml  --all-traffic
+  18 py .\test.py
