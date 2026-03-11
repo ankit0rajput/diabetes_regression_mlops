@@ -1,11 +1,11 @@
 import requests
 
 url = "https://my-model-endpoint1.eastus2.inference.ml.azure.com/score"
-key = ""
+# key = ""
 
 headers = {
     "Content-Type": "application/json",
-    "Authorization": f"Bearer {key}"
+    # "Authorization": f"Bearer {key}"
 }
 
 data = {
