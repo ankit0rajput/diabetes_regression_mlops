@@ -1,0 +1,14 @@
+$schema: https://azuremlschemas.azureedge.net/latest/managedOnlineDeployment.schema.json
+name: blue
+endpoint_name: my-model-endpoint1
+model: azureml:diabetes_regression_model:1
+instance_type: Standard_DS2_v2
+instance_count: 1
+
+environment:
+  image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu20.04
+  conda_file: diabetes_regression/conda_dependencies.yml
+
+code_configuration:
+  code: .
+  scoring_script: diabetes_regression/scoring/score.py

@@ -41,10 +41,17 @@ def init():
     # AZUREML_MODEL_DIR is an environment variable created during deployment.
     # It is the path to the model folder
     # (./azureml-models/$MODEL_NAME/$VERSION)
-    model_path = Model.get_model_path(
-        os.getenv("AZUREML_MODEL_DIR").split('/')[-2])
+    print(os.getenv("AZUREML_MODEL_DIR"))
+    # model_path = Model.get_model_path(
+    #     os.getenv("AZUREML_MODEL_DIR").split('/')[-2])
+    # model = joblib.load(model_path)
 
+    print(f'asd=>${os.environ["AZUREML_MODEL_DIR"]}')
+    model_dir = os.environ["AZUREML_MODEL_DIR"]
+    model_path = os.path.join(model_dir, "outputs", "diabetes_regression_model.pkl")
+    print(f'model_path=>${model_path}')
     model = joblib.load(model_path)
+    
 
 
 input_sample = numpy.array([

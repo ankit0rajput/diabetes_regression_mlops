@@ -1,0 +1,16 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+
+command: >
+  python diabetes_regression/training/train_aml.py
+  --data_file_path data/diabetes.csv
+  --model_name diabetes_regression_model.pkl
+
+environment: azureml:AzureML-sklearn-1.0-ubuntu20.04-py38-cpu@latest
+
+compute: azureml:train-cluster
+
+experiment_name: mlopspython
+
+display_name: diabetes_training_run
+
+code: .
