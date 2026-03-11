@@ -1,7 +1,7 @@
 import requests
 
 url = "https://my-model-endpoint1.eastus2.inference.ml.azure.com/score"
-key = "DSwpxXsxakMAyR71sdtlg6oX1z4AXQEVQ3bs9cGZ9OvWCUYOfvxBJQQJ99CCAAAAAAAAAAAAINFRAZMLmwu1"
+key = ""
 
 headers = {
     "Content-Type": "application/json",
